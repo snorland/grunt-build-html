@@ -141,6 +141,13 @@ In this example we will define a list of templates that will be processed using 
 <%= _.map(params, function(key){return include(key);}).join('\n')  %>
 ```
 
+#### Basic example using includeSimple
+When you want templates that have run-time (not build-time) variables use includeSimple.  This prevents the template content from being passed to _.template for interpolation during build:
+
+```
+<%= includeSimple('my-content') %>
+```
+
 ### Troubleshooting
 You can launch your task with the `--debug` option to get more debug informations.
 
