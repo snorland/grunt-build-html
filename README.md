@@ -142,7 +142,7 @@ In this example we will define a list of templates that will be processed using 
 ```
 
 #### Basic example using includeSimple
-When you want templates that have run-time (not build-time) variables use includeSimple.  This prevents the template content from being passed to _.template for interpolation during build:
+When you want include templates that have run-time (not build-time) variables use includeSimple.  This prevents the template content from being passed to _.template for interpolation during build:
 
 ```
 <%= includeSimple('my-content') %>
