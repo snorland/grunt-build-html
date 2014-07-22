@@ -21,7 +21,7 @@ module.exports = function(grunt) {
   };
 
   grunt.registerMultiTask('build_html', 'Build HTML templates recursively.', function() {
-    var include, datapath, templates = {};
+    var include, includeSimple, datapath, templates = {};
 
     // Merge task-specific and/or target-specific options with these defaults.
     var options = this.options({
@@ -40,17 +40,17 @@ module.exports = function(grunt) {
     }
 
     // Include method to be used in HTML files.
-    include = function(tplName, data) {
+    include = function(tplName, data, useDotTemplate) {
       var files, templateData, html = '';
+      var interpolate = useDotTemplate!=='undefined' ? useDotTemplate : true;
       data = _.extend({}, options.data, data);
-
       if (_.has(templates, tplName)) {
         files = _.clone(this.files);
         files.push(templates[tplName].filepath);
         templateData = {files: files};
         data.include = include.bind(templateData);
         try {
-          html = _.template(templates[tplName].content, data, options.templateSettings);
+          html = interpolate ? _.template(templates[tplName].content, data, options.templateSettings) : templates[tplName].content;
         } catch (error) {
           grunt.log.error(error.message);
           backtrace(files);
@@ -61,6 +61,11 @@ module.exports = function(grunt) {
       }
       
       return html;
+    };
+
+    // Include method that will not pass include content through _.template
+    includeSimple = function (tplName) {
+      return this.include(tplName, {}, false);
     };
 
     // Process templates.
@@ -96,6 +101,7 @@ module.exports = function(grunt) {
         var html = '';
         var templateData = _.extend({}, options.data, {files: [filepath]});
         templateData.include = include.bind(templateData);
+        templateData.includeSimple = includeSimple.bind(templateData);
         options.filename = filepath;
         try {
           html = _.template(grunt.file.read(filepath), templateData, options.templateSettings);
